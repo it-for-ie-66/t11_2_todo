@@ -1,0 +1,30 @@
+@import url("https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,400;0,700;1,400&display=swap");
+
+* {
+  font-family: "Prompt", sans-serif;
+}
+
+.todo-wrapper {
+  margin-top: 2em;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 1em;
+}
+
+.todo-item {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 0.5em;
+  border-radius: 0.5em;
+}
+
+.todo-item:hover {
+  background-color: #ccc;
+}
+
+.trash {
+  cursor: pointer;
+}
