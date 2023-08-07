@@ -7,11 +7,13 @@ type Todo = Database["public"]["Tables"]["todos"]["Row"];
 function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState<string>("");
-
+  const [edit, setEdit] = useState<boolean>(false);
+  const [currentTodo, setCurrentTodo] = useState<Todo | null>(null);
   function fetchTodo() {
     supabase
       .from("todos")
       .select("*")
+      .order("created_at", { ascending: true })
       .then((res) => {
         // console.log(res.data);
         setTodos(res.data || []);
@@ -28,14 +30,29 @@ function App() {
 
   const handleSubmit = () => {
     if (!title) return;
-    supabase
-      .from("todos")
-      .insert([{ title: title }])
-      .then((res) => {
-        console.log(res);
-        fetchTodo();
-        setTitle("");
-      });
+    if (!edit) {
+      supabase
+        .from("todos")
+        .insert([{ title: title }])
+        .then((res) => {
+          console.log(res);
+          fetchTodo();
+          setTitle("");
+        });
+    }
+
+    if (edit && currentTodo) {
+      supabase
+        .from("todos")
+        .update({ title: title })
+        .eq("id", currentTodo.id)
+        .then((res) => {
+          console.log(res);
+          fetchTodo();
+          setTitle("");
+          setEdit(false);
+        });
+    }
   };
 
   function handleDelete(todo: Todo) {
@@ -47,6 +64,12 @@ function App() {
         console.log(res);
         fetchTodo();
       });
+  }
+
+  function handleEdit(todo: Todo) {
+    setEdit(true);
+    setCurrentTodo(todo);
+    setTitle(todo.title);
   }
 
   return (
@@ -66,6 +89,9 @@ function App() {
               <span>📅{date}</span>
               <span>⏰{time}</span>
               <span>📰{todo.title}</span>
+              <span className="trash" onClick={() => handleEdit(todo)}>
+                🖊️
+              </span>
               <span className="trash" onClick={() => handleDelete(todo)}>
                 🗑️
               </span>
